@@ -63,6 +63,41 @@ export const mockTimetable: Record<string, typeof mockClasses> = {
   ],
 };
 
+export const mockExamInternalsTimetable = [
+  {
+    id: 'ei-1',
+    title: 'Data Structures Internal - 1',
+    date: 'Apr 8, 2026',
+    time: '9:30 AM - 10:30 AM',
+    venue: 'CS-101',
+    type: 'Internal',
+  },
+  {
+    id: 'ei-2',
+    title: 'Operating Systems Internal - 1',
+    date: 'Apr 10, 2026',
+    time: '11:00 AM - 12:00 PM',
+    venue: 'CS-102',
+    type: 'Internal',
+  },
+  {
+    id: 'ei-3',
+    title: 'Computer Networks Mid-Sem Exam',
+    date: 'Apr 18, 2026',
+    time: '2:00 PM - 5:00 PM',
+    venue: 'Main Block Hall 2',
+    type: 'Exam',
+  },
+  {
+    id: 'ei-4',
+    title: 'Machine Learning Mid-Sem Exam',
+    date: 'Apr 21, 2026',
+    time: '9:30 AM - 12:30 PM',
+    venue: 'Main Block Hall 1',
+    type: 'Exam',
+  },
+];
+
 export const mockEvents = [
   {
     id: '1', title: 'Hackathon 2025', category: 'Technical',
