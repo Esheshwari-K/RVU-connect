@@ -1,45 +1,20 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import SplashScreen from './src/screens/SplashScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import AppNavigator from './src/navigation/AppNavigator';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+type AppState = 'splash' | 'login' | 'main';
 
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+export default function App() {
+  const [state, setState] = useState<AppState>('splash');
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      {state === 'splash' && <SplashScreen onFinish={() => setState('login')} />}
+      {state === 'login' && <LoginScreen onLogin={() => setState('main')} />}
+      {state === 'main' && <AppNavigator />}
     </SafeAreaProvider>
   );
 }
 
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-export default App;
