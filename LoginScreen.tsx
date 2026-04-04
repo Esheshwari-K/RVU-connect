@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   KeyboardAvoidingView, Platform, ScrollView, Animated,
-  StatusBar, Dimensions,
+  StatusBar, Dimensions, Alert,
 } from 'react-native';
 import { colors } from '../theme/colors';
 
@@ -13,20 +13,39 @@ interface Props {
 }
 
 export default function LoginScreen({ onLogin }: Props) {
-  const [usn, setUsn] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const buttonScale = useRef(new Animated.Value(1)).current;
 
   const handleLogin = () => {
-    if (!usn || !password) return;
+    if (!email || !password) return;
+
+    // Email Domain Validation: Only accepts @rvu.edu.in
+    const rvuEmailRegex = /^[a-zA-Z0-9._%+-]+@rvu\.edu\.in$/;
+    
+    if (!rvuEmailRegex.test(email.toLowerCase().trim())) {
+      Alert.alert(
+        "Invalid Email",
+        "Only RV University emails (@rvu.edu.in) are permitted to sign in."
+      );
+      return;
+    }
+
     setLoading(true);
+    
+    // Animation logic
     Animated.sequence([
       Animated.timing(buttonScale, { toValue: 0.96, duration: 100, useNativeDriver: true }),
       Animated.timing(buttonScale, { toValue: 1, duration: 100, useNativeDriver: true }),
     ]).start();
-    setTimeout(() => { setLoading(false); onLogin(); }, 1200);
+
+    // Mock API call
+    setTimeout(() => { 
+      setLoading(false); 
+      onLogin(); 
+    }, 1200);
   };
 
   return (
@@ -48,17 +67,19 @@ export default function LoginScreen({ onLogin }: Props) {
           <Text style={styles.cardTitle}>Welcome Back 👋</Text>
           <Text style={styles.cardSubtitle}>Sign in with your university credentials</Text>
 
-          {/* USN */}
-          <Text style={styles.label}>University Serial Number (USN)</Text>
+          {/* Email Input */}
+          <Text style={styles.label}>University Email ID</Text>
           <View style={styles.inputWrapper}>
-            <Text style={styles.inputIcon}>🎓</Text>
+            <Text style={styles.inputIcon}>✉️</Text>
             <TextInput
               style={styles.input}
-              placeholder="e.g. 1RV21CS045"
+              placeholder="name@rvu.edu.in"
               placeholderTextColor={colors.textLight}
-              value={usn}
-              onChangeText={setUsn}
-              autoCapitalize="characters"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
             />
           </View>
 
@@ -86,20 +107,20 @@ export default function LoginScreen({ onLogin }: Props) {
           {/* Login button */}
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
             <TouchableOpacity
-              style={[styles.loginBtn, (!usn || !password) && styles.loginBtnDisabled]}
+              style={[styles.loginBtn, (!email || !password) && styles.loginBtnDisabled]}
               onPress={handleLogin}
-              disabled={loading || !usn || !password}
+              disabled={loading || !email || !password}
               activeOpacity={0.85}
             >
               <Text style={styles.loginBtnText}>
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? 'Verifying...' : 'Sign In'}
               </Text>
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Demo hint */}
+          {/* Restriction Notice */}
           <View style={styles.demoHint}>
-            <Text style={styles.demoText}>Demo: Any USN + password works</Text>
+            <Text style={styles.demoText}>Access restricted to @rvu.edu.in</Text>
           </View>
         </View>
 
@@ -160,10 +181,10 @@ const styles = StyleSheet.create({
   loginBtnText: { color: colors.white, fontSize: 17, fontWeight: 'bold', letterSpacing: 0.5 },
 
   demoHint: {
-    marginTop: 16, padding: 10, backgroundColor: '#EEF2FF',
+    marginTop: 16, padding: 10, backgroundColor: '#F8FAFC',
     borderRadius: 8, alignItems: 'center',
   },
-  demoText: { fontSize: 12, color: colors.primary },
+  demoText: { fontSize: 12, color: colors.textSecondary, fontWeight: '500' },
 
   footer: { textAlign: 'center', color: 'rgba(255,255,255,0.5)', fontSize: 12, marginTop: 28 },
   footerSub: { color: 'rgba(255,255,255,0.3)' },
