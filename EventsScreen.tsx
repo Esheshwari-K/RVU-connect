@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 import React, { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';

@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '../theme/colors';

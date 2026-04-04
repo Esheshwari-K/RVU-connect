@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 export const colors = {
   primary: '#1A3C6E',      // RVU navy blue
   primaryLight: '#2A5298',

@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 package com.rvuconnect_app
 
 import com.facebook.react.ReactActivity

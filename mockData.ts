@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 export const mockUser = {
   name: 'Ananya Ravikumar',
   usn: '1RV21CS045',

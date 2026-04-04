@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 import UIKit
 import React
 import React_RCTAppDelegate

@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';

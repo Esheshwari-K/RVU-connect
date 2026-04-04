@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 import React, { useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SplashScreen from './src/screens/SplashScreen';

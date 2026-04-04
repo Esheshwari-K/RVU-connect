@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 import React, { useEffect, useRef } from 'react';
 import {
   View, Text, StyleSheet, Animated, StatusBar, Dimensions,

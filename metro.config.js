@@ -1,3 +1,4 @@
+// Updated: 2026-04-05
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
 /**
