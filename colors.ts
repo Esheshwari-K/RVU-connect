@@ -1,8 +1,8 @@
 // Updated: 2026-04-05
 export const colors = {
-  primary: '#1A3C6E',      // RVU navy blue
+  primary: '#233036',      // RVU navy blue
   primaryLight: '#2A5298',
-  accent: '#F4A020',       // Gold accent
+  accent: '#C79100',       // Gold
   background: '#F5F7FA',
   card: '#FFFFFF',
   text: '#1A1A2E',
