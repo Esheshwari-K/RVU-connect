@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { colors } from '../theme/colors';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 interface Props {
   onFinish: () => void;
@@ -33,7 +33,7 @@ export default function SplashScreen({ onFinish }: Props) {
         Animated.timing(taglineOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
       ]),
     ]).start(() => onFinish());
-  }, [circleScale, logoOpacity, logoScale, onFinish, taglineOpacity, textOpacity]);
+  }, []);
 
   return (
     <View style={styles.container}>
