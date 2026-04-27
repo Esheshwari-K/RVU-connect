@@ -4,7 +4,7 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors } from '../theme/colors';
-import { mockEvents, mockClubs } from '../data/mockData';
+import { fetchEvents, fetchClubs, EventItem, ClubItem } from '../services/firebaseData';
 import type { MainTabParamList } from '../navigation/MainTabNavigator';
 
 const FILTERS = ['All', 'Technical', 'Cultural', 'Workshop', 'Sports'];
@@ -34,6 +34,28 @@ export default function EventsScreen() {
   const route = useRoute<EventsRoute>();
   const [filter, setFilter] = useState(route.params?.initialFilter ?? 'All');
   const [tab, setTab] = useState<'events' | 'clubs'>(route.params?.initialTab ?? 'events');
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [clubs, setClubs] = useState<ClubItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [eventsData, clubsData] = await Promise.all([
+          fetchEvents(),
+          fetchClubs(),
+        ]);
+        setEvents(eventsData);
+        setClubs(clubsData);
+      } catch (error) {
+        console.error('Error loading events data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
 
   useEffect(() => {
     if (route.params?.initialFilter) {
@@ -44,7 +66,7 @@ export default function EventsScreen() {
     }
   }, [route.params?.initialFilter, route.params?.initialTab]);
 
-  const filtered = filter === 'All' ? mockEvents : mockEvents.filter(e => e.category === filter);
+  const filtered = filter === 'All' ? events : events.filter(e => e.category === filter);
   const highlightedEventId = route.params?.highlightEventId;
 
   return (
@@ -135,7 +157,7 @@ export default function EventsScreen() {
         </>
       ) : (
         <View style={styles.clubsGrid}>
-          {mockClubs.map(club => (
+          {clubs.map(club => (
             <TouchableOpacity key={club.id} style={styles.clubCard} activeOpacity={0.8}>
               <View style={[styles.clubEmoji, { backgroundColor: club.color + '18' }]}>
                 <Text style={styles.clubEmojiText}>{club.emoji}</Text>

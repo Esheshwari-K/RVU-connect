@@ -6,6 +6,7 @@ import {
   StatusBar, Dimensions, Alert,
 } from 'react-native';
 import { colors } from '../theme/colors';
+import { signInWithEmail, signUpWithEmail } from '../firebase/firebase';
 
 const { width } = Dimensions.get('window');
 
@@ -16,37 +17,99 @@ interface Props {
 export default function LoginScreen({ onLogin }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState('');
+  const [usn, setUsn] = useState('');
+  const [branch, setBranch] = useState('Computer Science & Engineering');
+  const [semester, setSemester] = useState('6th Semester');
+  const [year, setYear] = useState('3rd Year');
+  const [section, setSection] = useState('A');
+  const [phone, setPhone] = useState('');
+  const [dob, setDob] = useState('');
+  const [hostel, setHostel] = useState('Hostel A');
   const [loading, setLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
+  const [view, setView] = useState<'login' | 'register'>('login');
   const buttonScale = useRef(new Animated.Value(1)).current;
 
-  const handleLogin = () => {
-    if (!email || !password) return;
+  const rvuEmailRegex = /^[a-zA-Z0-9._%+-]+@rvu\.edu\.in$/;
 
-    // Email Domain Validation: Only accepts @rvu.edu.in
-    const rvuEmailRegex = /^[a-zA-Z0-9._%+-]+@rvu\.edu\.in$/;
-    
+  const handleLogin = async () => {
+    if (!email || !password) return;
     if (!rvuEmailRegex.test(email.toLowerCase().trim())) {
       Alert.alert(
-        "Invalid Email",
-        "Only RV University emails (@rvu.edu.in) are permitted to sign in."
+        'Invalid Email',
+        'Only RV University emails (@rvu.edu.in) are permitted to sign in.'
       );
       return;
     }
 
     setLoading(true);
-    
-    // Animation logic
     Animated.sequence([
       Animated.timing(buttonScale, { toValue: 0.96, duration: 100, useNativeDriver: true }),
       Animated.timing(buttonScale, { toValue: 1, duration: 100, useNativeDriver: true }),
     ]).start();
 
-    // Mock API call
-    setTimeout(() => { 
-      setLoading(false); 
-      onLogin(); 
-    }, 1200);
+    try {
+      await signInWithEmail(email.trim(), password);
+      onLogin();
+    } catch (error: any) {
+      Alert.alert(
+        'Sign in failed',
+        error?.message || 'Unable to sign in. Please check your credentials and try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async () => {
+    if (!name || !email || !password || !confirmPassword || !usn || !branch || !semester || !year || !section || !phone || !dob || !hostel) {
+      Alert.alert('Missing details', 'Please fill in all registration fields.');
+      return;
+    }
+
+    if (!rvuEmailRegex.test(email.toLowerCase().trim())) {
+      Alert.alert('Invalid Email', 'Only RV University emails (@rvu.edu.in) are permitted to register.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Password mismatch', 'Password and confirm password must match.');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Weak password', 'Password must be at least 6 characters long.');
+      return;
+    }
+
+    setRegisterLoading(true);
+
+    try {
+      await signUpWithEmail({
+        name,
+        usn,
+        branch,
+        semester,
+        year,
+        section,
+        phone,
+        dob,
+        hostel,
+        email: email.trim(),
+        password,
+      });
+      onLogin();
+    } catch (error: any) {
+      Alert.alert(
+        'Registration failed',
+        error?.message || 'Unable to register. Please check your information and try again.'
+      );
+    } finally {
+      setRegisterLoading(false);
+    }
   };
 
   return (
@@ -65,8 +128,135 @@ export default function LoginScreen({ onLogin }: Props) {
 
         {/* Card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Welcome Back 👋</Text>
-          <Text style={styles.cardSubtitle}>Sign in with your university credentials</Text>
+          <Text style={styles.cardTitle}>
+            {view === 'login' ? 'Welcome Back 👋' : 'Create your student account'}
+          </Text>
+          <Text style={styles.cardSubtitle}>
+            {view === 'login'
+              ? 'Sign in with your university credentials'
+              : 'Register with your RV University email and student details'}
+          </Text>
+
+          {view === 'register' && (
+            <>
+              <Text style={styles.label}>Full Name</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🧑</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Esheshwari Kumari"
+                  placeholderTextColor={colors.textLight}
+                  value={name}
+                  onChangeText={setName}
+                  autoCapitalize="words"
+                />
+              </View>
+
+              <Text style={styles.label}>USN</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🪪</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="1RV24CS101"
+                  placeholderTextColor={colors.textLight}
+                  value={usn}
+                  onChangeText={setUsn}
+                  autoCapitalize="characters"
+                />
+              </View>
+
+              <Text style={styles.label}>Branch</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🏫</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Computer Science & Engineering"
+                  placeholderTextColor={colors.textLight}
+                  value={branch}
+                  onChangeText={setBranch}
+                />
+              </View>
+
+              <View style={styles.row}>
+                <View style={[styles.inputColumn, { marginRight: 8 }]}> 
+                  <Text style={styles.label}>Semester</Text>
+                  <View style={styles.inputWrapper}>
+                    <Text style={styles.inputIcon}>📘</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="6th Semester"
+                      placeholderTextColor={colors.textLight}
+                      value={semester}
+                      onChangeText={setSemester}
+                    />
+                  </View>
+                </View>
+                <View style={styles.inputColumn}>
+                  <Text style={styles.label}>Year</Text>
+                  <View style={styles.inputWrapper}>
+                    <Text style={styles.inputIcon}>🎓</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="3rd Year"
+                      placeholderTextColor={colors.textLight}
+                      value={year}
+                      onChangeText={setYear}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <Text style={styles.label}>Section</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🔢</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="A"
+                  placeholderTextColor={colors.textLight}
+                  value={section}
+                  onChangeText={setSection}
+                  autoCapitalize="characters"
+                />
+              </View>
+
+              <Text style={styles.label}>Phone</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>📞</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="+91 98765 43210"
+                  placeholderTextColor={colors.textLight}
+                  value={phone}
+                  onChangeText={setPhone}
+                  keyboardType="phone-pad"
+                />
+              </View>
+
+              <Text style={styles.label}>Date of Birth</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🎂</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="20 July 2004"
+                  placeholderTextColor={colors.textLight}
+                  value={dob}
+                  onChangeText={setDob}
+                />
+              </View>
+
+              <Text style={styles.label}>Hostel / Residence</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🏨</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Girls Hostel A"
+                  placeholderTextColor={colors.textLight}
+                  value={hostel}
+                  onChangeText={setHostel}
+                />
+              </View>
+            </>
+          )}
 
           {/* Email Input */}
           <Text style={styles.label}>University Email ID</Text>
@@ -101,20 +291,45 @@ export default function LoginScreen({ onLogin }: Props) {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.forgot}>
-            <Text style={styles.forgotText}>Forgot Password?</Text>
-          </TouchableOpacity>
+          {view === 'register' && (
+            <>
+              <Text style={styles.label}>Confirm Password</Text>
+              <View style={styles.inputWrapper}>
+                <Text style={styles.inputIcon}>🔒</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Repeat your password"
+                  placeholderTextColor={colors.textLight}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showPass}
+                />
+              </View>
+            </>
+          )}
 
-          {/* Login button */}
+          {view === 'login' && (
+            <TouchableOpacity style={styles.forgot}>
+              <Text style={styles.forgotText}>Forgot Password?</Text>
+            </TouchableOpacity>
+          )}
+
+          {/* Action button */}
           <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
             <TouchableOpacity
-              style={[styles.loginBtn, (!email || !password) && styles.loginBtnDisabled]}
-              onPress={handleLogin}
-              disabled={loading || !email || !password}
+              style={[
+                styles.loginBtn,
+                (view === 'login' && (!email || !password)) ||
+                (view === 'register' && (!name || !email || !password || !confirmPassword || !usn || !branch || !semester || !year || !section || !phone || !dob || !hostel))
+                  ? styles.loginBtnDisabled
+                  : undefined,
+              ]}
+              onPress={view === 'login' ? handleLogin : handleRegister}
+              disabled={loading || registerLoading || (view === 'login' ? !email || !password : !name || !email || !password || !confirmPassword || !usn || !branch || !semester || !year || !section || !phone || !dob || !hostel)}
               activeOpacity={0.85}
             >
               <Text style={styles.loginBtnText}>
-                {loading ? 'Verifying...' : 'Sign In'}
+                {view === 'login' ? (loading ? 'Verifying...' : 'Sign In') : (registerLoading ? 'Creating account...' : 'Register')}
               </Text>
             </TouchableOpacity>
           </Animated.View>
@@ -123,6 +338,14 @@ export default function LoginScreen({ onLogin }: Props) {
           <View style={styles.demoHint}>
             <Text style={styles.demoText}>Access restricted to @rvu.edu.in</Text>
           </View>
+
+          <TouchableOpacity onPress={() => setView(view === 'login' ? 'register' : 'login')} style={styles.switchView}>
+            <Text style={styles.switchText}>
+              {view === 'login'
+                ? "Don't have an account? Register"
+                : 'Already have an account? Sign in'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Footer */}
@@ -168,6 +391,10 @@ const styles = StyleSheet.create({
   inputIcon: { fontSize: 16, marginRight: 10 },
   input: { flex: 1, height: 50, fontSize: 15, color: colors.text },
   showBtn: { fontSize: 13, color: colors.primary, fontWeight: '600' },
+  row: { flexDirection: 'row', justifyContent: 'space-between' },
+  inputColumn: { flex: 1 },
+  switchView: { marginTop: 18, alignSelf: 'center' },
+  switchText: { fontSize: 13, color: colors.primary, fontWeight: '600' },
 
   forgot: { alignSelf: 'flex-end', marginBottom: 24 },
   forgotText: { fontSize: 13, color: colors.primary, fontWeight: '600' },

@@ -4,7 +4,7 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-nati
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors } from '../theme/colors';
-import { mockTimetable, mockExamInternalsTimetable } from '../data/mockData';
+import { fetchTimetable, ClassItem } from '../services/firebaseData';
 import type { MainTabParamList } from '../navigation/MainTabNavigator';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -43,6 +43,28 @@ export default function TimetableScreen() {
   const defaultDay = todayIdx === 0 || todayIdx === 7 ? 'Mon' : DAYS[todayIdx - 1];
   const [selected, setSelected] = useState(route.params?.focusDay ?? defaultDay);
   const [category, setCategory] = useState<(typeof CATEGORIES)[number]>(route.params?.highlightExamId ? 'Exam / Internals' : 'Class Timetable');
+  const [timetable, setTimetable] = useState<Record<string, ClassItem[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTimetable = async () => {
+      try {
+        // Load timetable for all days
+        const timetableData: Record<string, ClassItem[]> = {};
+        for (const day of DAYS) {
+          const dayData = await fetchTimetable(day);
+          timetableData[day] = dayData;
+        }
+        setTimetable(timetableData);
+      } catch (error) {
+        console.error('Error loading timetable:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTimetable();
+  }, []);
 
   useEffect(() => {
     if (route.params?.focusDay) {
@@ -54,8 +76,8 @@ export default function TimetableScreen() {
     }
   }, [route.params?.focusDay, route.params?.highlightExamId]);
 
-  const classes = mockTimetable[selected] ?? [];
-  const examInternals = mockExamInternalsTimetable;
+  const classes = timetable[selected] ?? [];
+  const examInternals = mockExamInternalsTimetable; // TODO: Replace with Firebase fetch
   const isClassMode = category === 'Class Timetable';
   const highlightedExamId = route.params?.highlightExamId;
   const nextExam = [...examInternals].sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())[0];

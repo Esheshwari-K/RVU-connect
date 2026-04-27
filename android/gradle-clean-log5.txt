@@ -1,0 +1,137 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:settings-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:react-native-gradle-plugin:jar UP-TO-DATE
+
+> Configure project :react-native-firebase_app
+:react-native-firebase_app package.json found at D:\RVU-connect\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:firebase.bom using default value: 34.10.0
+:react-native-firebase_app:play.play-services-auth using default value: 21.5.0
+:react-native-firebase_app package.json found at D:\RVU-connect\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_app:version set from package.json: 24.0.0 (24,0,0 - 24000000)
+:react-native-firebase_app:android.compileSdk using custom value: 36
+:react-native-firebase_app:android.targetSdk using custom value: 36
+:react-native-firebase_app:android.minSdk using custom value: 24
+:react-native-firebase_app:reactNativeAndroidDir D:\RVU-connect\node_modules\react-native
+
+> Configure project :react-native-firebase_auth
+:react-native-firebase_auth package.json found at D:\RVU-connect\node_modules\@react-native-firebase\auth\package.json
+:react-native-firebase_app package.json found at D:\RVU-connect\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_auth:firebase.bom using default value: 34.10.0
+:react-native-firebase_auth package.json found at D:\RVU-connect\node_modules\@react-native-firebase\auth\package.json
+:react-native-firebase_auth:version set from package.json: 24.0.0 (24,0,0 - 24000000)
+:react-native-firebase_auth:android.compileSdk using custom value: 36
+:react-native-firebase_auth:android.targetSdk using custom value: 36
+:react-native-firebase_auth:android.minSdk using custom value: 24
+:react-native-firebase_auth:reactNativeAndroidDir D:\RVU-connect\node_modules\react-native
+
+> Configure project :react-native-firebase_firestore
+:react-native-firebase_firestore package.json found at D:\RVU-connect\node_modules\@react-native-firebase\firestore\package.json
+:react-native-firebase_app package.json found at D:\RVU-connect\node_modules\@react-native-firebase\app\package.json
+:react-native-firebase_firestore:firebase.bom using default value: 34.10.0
+:react-native-firebase_firestore package.json found at D:\RVU-connect\node_modules\@react-native-firebase\firestore\package.json
+:react-native-firebase_firestore:version set from package.json: 24.0.0 (24,0,0 - 24000000)
+:react-native-firebase_firestore:android.compileSdk using custom value: 36
+:react-native-firebase_firestore:android.targetSdk using custom value: 36
+:react-native-firebase_firestore:android.minSdk using custom value: 24
+:react-native-firebase_firestore:reactNativeAndroidDir D:\RVU-connect\node_modules\react-native
+
+> Task :app:externalNativeBuildCleanDebug
+Clean react_codegen_RNVectorIconsSpec-armeabi-v7a, react_codegen_safeareacontext-armeabi-v7a, react_codegen_rnscreens-armeabi-v7a, appmodules-armeabi-v7a
+C/C++: -- GLOB mismatch!
+C/C++: -- GLOB mismatch!
+C/C++: -- GLOB mismatch!
+C/C++: -- GLOB mismatch!
+C/C++: -- GLOB mismatch!
+C/C++: -- GLOB mismatch!
+C/C++: CMake Error in CMakeLists.txt:
+C/C++:   Imported target "fbjni::fbjni" includes non-existent path
+C/C++:     "C:/Users/HP/.gradle/caches/9.0.0/transforms/deeab978e737684b8a05768dbcddd424/transformed/fbjni-0.7.0/prefab/modules/fbjni/include"
+C/C++:   in its INTERFACE_INCLUDE_DIRECTORIES.  Possible reasons include:
+C/C++:   * The path was deleted, renamed, or moved to another location.
+C/C++:   * An install or uninstall procedure did not complete successfully.
+C/C++:   * The installation package was faulty and references files it does not
+C/C++:   provide.
+C/C++: CMake Generate step failed.  Build files cannot be regenerated correctly.
+C/C++: ninja: error: rebuilding 'build.ninja': subcommand failed
+
+> Task :app:externalNativeBuildCleanDebug FAILED
+
+[Incubating] Problems report is available at: file:///D:/RVU-connect/android/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:externalNativeBuildCleanDebug'.
+> com.android.ide.common.process.ProcessException: ninja: Entering directory `D:\RVU-connect\android\app\.cxx\Debug\4w6k511h\armeabi-v7a'
+  [0/2] Re-checking globbed directories...
+  [1/2] Re-running CMake...
+  -- Configuring done
+  -- Generating done
+  FAILED: build.ninja 
+  C:\Users\HP\AppData\Local\Android\Sdk\cmake\3.22.1\bin\cmake.exe --regenerate-during-build -SD:\RVU-connect\node_modules\react-native\ReactAndroid\cmake-utils\default-app-setup -BD:\RVU-connect\android\app\.cxx\Debug\4w6k511h\armeabi-v7a
+  
+  C++ build system [clean] failed while executing:
+      @echo off
+      "C:\\Users\\HP\\AppData\\Local\\Android\\Sdk\\cmake\\3.22.1\\bin\\ninja.exe" ^
+        -C ^
+        "D:\\RVU-connect\\android\\app\\.cxx\\Debug\\4w6k511h\\armeabi-v7a" ^
+        clean
+    from D:\RVU-connect\android\app
+  -- GLOB mismatch!
+  -- GLOB mismatch!
+  -- GLOB mismatch!
+  -- GLOB mismatch!
+  -- GLOB mismatch!
+  -- GLOB mismatch!
+  CMake Error in CMakeLists.txt:
+    Imported target "fbjni::fbjni" includes non-existent path
+  
+      "C:/Users/HP/.gradle/caches/9.0.0/transforms/deeab978e737684b8a05768dbcddd424/transformed/fbjni-0.7.0/prefab/modules/fbjni/include"
+  
+    in its INTERFACE_INCLUDE_DIRECTORIES.  Possible reasons include:
+  
+    * The path was deleted, renamed, or moved to another location.
+  
+    * An install or uninstall procedure did not complete successfully.
+  
+    * The installation package was faulty and references files it does not
+    provide.
+  
+  
+  
+  CMake Generate step failed.  Build files cannot be regenerated correctly.
+  ninja: error: rebuilding 'build.ninja': subcommand failed
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 3m 16s
+11 actionable tasks: 1 executed, 10 up-to-date

@@ -1,19 +1,60 @@
 // Updated: 2026-04-05
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { colors } from '../theme/colors';
-import { mockUser, mockStats, mockAttendance } from '../data/mockData';
+import { mockUser } from '../data/mockData';
+import { fetchUserProfile, fetchUserStats, fetchAttendanceRecords, updateUserProfile, UserProfile, StatsItem, AttendanceRecord } from '../services/firebaseData';
+import { signOutCurrentUser } from '../firebase/firebase';
 
 export default function ProfileScreen() {
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [stats, setStats] = useState<StatsItem[]>([]);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [editProfile, setEditProfile] = useState<UserProfile>(mockUser);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [userData, statsData, attendanceData] = await Promise.all([
+          fetchUserProfile(),
+          fetchUserStats(),
+          fetchAttendanceRecords(),
+        ]);
+        setUser(userData);
+        setEditProfile(userData);
+        setStats(statsData);
+        setAttendance(attendanceData);
+      } catch (error) {
+        console.error('Error loading profile data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}> 
+        <Text style={{ color: colors.textSecondary }}>Loading profile...</Text>
+      </View>
+    );
+  }
+
+  const profile = user ?? mockUser;
   const infoRows = [
-    { label: 'USN', value: mockUser.usn },
-    { label: 'Branch', value: mockUser.branch },
-    { label: 'Semester', value: mockUser.semester },
-    { label: 'Section', value: mockUser.section },
-    { label: 'Date of Birth', value: mockUser.dob },
-    { label: 'Email', value: mockUser.email },
-    { label: 'Phone', value: mockUser.phone },
-    { label: 'Hostel', value: mockUser.hostel },
+    { label: 'USN', value: profile.usn },
+    { label: 'Branch', value: profile.branch },
+    { label: 'Semester', value: profile.semester },
+    { label: 'Section', value: profile.section },
+    { label: 'Date of Birth', value: profile.dob },
+    { label: 'Email', value: profile.email },
+    { label: 'Phone', value: profile.phone },
+    { label: 'Hostel', value: profile.hostel },
   ];
 
   return (
@@ -21,19 +62,19 @@ export default function ProfileScreen() {
       {/* Profile card */}
       <View style={styles.profileCard}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{mockUser.avatar}</Text>
+          <Text style={styles.avatarText}>{profile.avatar}</Text>
         </View>
-        <Text style={styles.name}>{mockUser.name}</Text>
-        <Text style={styles.branch}>{mockUser.branch}</Text>
-        <Text style={styles.semester}>{mockUser.semester} · {mockUser.year}</Text>
+        <Text style={styles.name}>{profile.name}</Text>
+        <Text style={styles.branch}>{profile.branch}</Text>
+        <Text style={styles.semester}>{profile.semester} · {profile.year}</Text>
         <View style={styles.usnBadge}>
-          <Text style={styles.usnText}>🎓 {mockUser.usn}</Text>
+          <Text style={styles.usnText}>🎓 {profile.usn}</Text>
         </View>
       </View>
 
       {/* Stats */}
       <View style={styles.statsGrid}>
-        {mockStats.map(s => (
+        {stats.map(s => (
           <View key={s.label} style={styles.statCard}>
             <Text style={[styles.statValue, { color: s.color }]}>{s.value}</Text>
             <Text style={styles.statLabel}>{s.label}</Text>
@@ -44,7 +85,7 @@ export default function ProfileScreen() {
       {/* Attendance breakdown */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Attendance Breakdown</Text>
-        {mockAttendance.map(item => {
+        {attendance.map(item => {
           const pct = Math.round((item.attended / item.total) * 100);
           return (
             <View key={item.subject} style={styles.attRow}>
@@ -65,19 +106,79 @@ export default function ProfileScreen() {
 
       {/* Student info */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Student Information</Text>
-        <View style={styles.infoCard}>
-          {infoRows.map((row, idx) => (
-            <View key={row.label} style={[styles.infoRow, idx < infoRows.length - 1 && styles.infoRowBorder]}>
-              <Text style={styles.infoLabel}>{row.label}</Text>
-              <Text style={styles.infoValue} numberOfLines={1}>{row.value}</Text>
-            </View>
-          ))}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Student Information</Text>
+          <TouchableOpacity onPress={() => {
+            if (editing) {
+              setEditing(false);
+              setEditProfile(profile);
+            } else {
+              setEditing(true);
+            }
+          }}>
+            <Text style={styles.editButton}>{editing ? 'Cancel' : 'Edit Profile'}</Text>
+          </TouchableOpacity>
         </View>
+
+        <View style={styles.infoCard}>
+          {editing ? (
+            <>
+              {['name', 'usn', 'branch', 'semester', 'year', 'section', 'phone', 'dob', 'hostel', 'email'].map((field) => {
+                const key = field as keyof UserProfile;
+                return (
+                  <View key={field} style={[styles.infoRow, field !== 'email' && styles.infoRowBorder]}>
+                    <Text style={styles.infoLabel}>{field === 'name' ? 'Full Name' : field === 'usn' ? 'USN' : field === 'dob' ? 'Date of Birth' : field === 'hostel' ? 'Hostel' : field.charAt(0).toUpperCase() + field.slice(1)}</Text>
+                    <TextInput
+                      style={[styles.infoValue, styles.editInput]}
+                      value={String(editProfile[key] ?? '')}
+                      onChangeText={(text) => setEditProfile(prev => ({ ...prev, [key]: text }))}
+                      editable={field !== 'email'}
+                      placeholder={field === 'email' ? 'Email cannot be changed' : undefined}
+                    />
+                  </View>
+                );
+              })}
+            </>
+          ) : (
+            infoRows.map((row, idx) => (
+              <View key={row.label} style={[styles.infoRow, idx < infoRows.length - 1 && styles.infoRowBorder]}>
+                <Text style={styles.infoLabel}>{row.label}</Text>
+                <Text style={styles.infoValue} numberOfLines={1}>{row.value}</Text>
+              </View>
+            ))
+          )}
+        </View>
+
+        {editing && (
+          <TouchableOpacity style={styles.saveBtn} onPress={async () => {
+            setSaving(true);
+            try {
+              const updatedProfile = await updateUserProfile(editProfile);
+              setUser(updatedProfile);
+              setEditProfile(updatedProfile);
+              setEditing(false);
+              Alert.alert('Profile updated', 'Your profile information has been saved.');
+            } catch (error) {
+              console.error('Error saving profile:', error);
+              Alert.alert('Save failed', 'Unable to update profile. Please try again later.');
+            } finally {
+              setSaving(false);
+            }
+          }} disabled={saving}>
+            <Text style={styles.saveBtnText}>{saving ? 'Saving...' : 'Save Changes'}</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Logout */}
-      <TouchableOpacity style={styles.logoutBtn}>
+      <TouchableOpacity style={styles.logoutBtn} onPress={async () => {
+        try {
+          await signOutCurrentUser();
+        } catch (error) {
+          console.error('Error signing out:', error);
+          Alert.alert('Logout failed', 'Unable to sign out right now.');
+        }
+      }}>
         <Text style={styles.logoutText}>🚪 Sign Out</Text>
       </TouchableOpacity>
 
@@ -135,10 +236,21 @@ const styles = StyleSheet.create({
     elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06, shadowRadius: 6,
   },
-  infoRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 13, justifyContent: 'space-between' },
+  infoRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 13, justifyContent: 'space-between', alignItems: 'center' },
   infoRowBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },
   infoLabel: { fontSize: 13, color: colors.textSecondary, flex: 1 },
   infoValue: { fontSize: 13, fontWeight: '600', color: colors.text, flex: 2, textAlign: 'right' },
+  editInput: { backgroundColor: '#F8FAFC', borderRadius: 12, padding: 8, textAlign: 'right', minWidth: 140, color: colors.text },
+  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  editButton: { fontSize: 13, color: colors.primary, fontWeight: '700' },
+  saveBtn: {
+    marginTop: 14,
+    backgroundColor: colors.primary,
+    borderRadius: 14,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  saveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
   logoutBtn: {
     marginHorizontal: 16, marginTop: 24, borderWidth: 1.5,
     borderColor: colors.danger, borderRadius: 14, padding: 16, alignItems: 'center',

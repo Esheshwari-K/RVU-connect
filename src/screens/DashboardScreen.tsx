@@ -12,12 +12,17 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../theme/colors';
 import {
-  mockUser,
-  mockAnnouncements,
-  mockStats,
-  mockAttendance,
-  mockTimetable,
-} from '../data/mockData';
+  fetchUserProfile,
+  fetchUserStats,
+  fetchAttendanceRecords,
+  fetchAnnouncements,
+  fetchTimetable,
+  UserProfile,
+  StatsItem,
+  AttendanceRecord,
+  AnnouncementItem,
+  ClassItem,
+} from '../services/firebaseData';
 
 const TAG_COLORS: Record<string, string> = {
   exam: '#EF4444',
@@ -74,36 +79,58 @@ function parseTimeToMinutes(timeStr: string) {
 
 export default function DashboardScreen() {
   const [refreshing, setRefreshing] = useState(false);
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [stats, setStats] = useState<StatsItem[]>([]);
+  const [attendance, setAttendance] = useState<AttendanceRecord[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
+  const [todayClasses, setTodayClasses] = useState<ClassItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateAnim = useRef(new Animated.Value(18)).current;
-  const unread = mockAnnouncements.filter(item => item.unread).length;
-  const todayKey = getDayKey();
-  const todayTimetable = mockTimetable[todayKey] ?? [];
-  const now = new Date();
-  const nowInMinutes = now.getHours() * 60 + now.getMinutes();
-  const todayClasses = todayTimetable.map((cls, index) => {
-    const currentClassTime = parseTimeToMinutes(cls.time);
-    const nextClassTime =
-      index < todayTimetable.length - 1
-        ? parseTimeToMinutes(todayTimetable[index + 1].time)
-        : currentClassTime + 60;
 
-    return {
-      ...cls,
-      done: nowInMinutes >= nextClassTime,
-      current: nowInMinutes >= currentClassTime && nowInMinutes < nextClassTime,
-    };
-  });
-  const completedClasses = todayClasses.filter(cls => cls.done).length;
-  const lowAttendance = mockAttendance
-    .map(item => ({
-      ...item,
-      percent: getAttendancePercent(item.attended, item.total),
-    }))
-    .sort((a, b) => a.percent - b.percent);
-  const lowestAttendance = lowAttendance[0];
+  const loadData = async () => {
+    try {
+      const todayKey = getDayKey();
+      const [userData, statsData, attendanceData, announcementsData, timetableData] = await Promise.all([
+        fetchUserProfile(),
+        fetchUserStats(),
+        fetchAttendanceRecords(),
+        fetchAnnouncements(),
+        fetchTimetable(todayKey),
+      ]);
+
+      setUser(userData);
+      setStats(statsData);
+      setAttendance(attendanceData);
+      setAnnouncements(announcementsData);
+
+      // Process today's classes
+      const now = new Date();
+      const nowInMinutes = now.getHours() * 60 + now.getMinutes();
+      const processedClasses = timetableData.map((cls, index) => {
+        const currentClassTime = parseTimeToMinutes(cls.time);
+        const nextClassTime =
+          index < timetableData.length - 1
+            ? parseTimeToMinutes(timetableData[index + 1].time)
+            : currentClassTime + 60;
+
+        return {
+          ...cls,
+          done: nowInMinutes >= nextClassTime,
+          current: nowInMinutes >= currentClassTime && nowInMinutes < nextClassTime,
+        };
+      });
+      setTodayClasses(processedClasses);
+    } catch (error) {
+      console.error('Error loading dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
+    loadData();
+
     Animated.parallel([
       Animated.timing(fadeAnim, {
         toValue: 1,
@@ -118,10 +145,32 @@ export default function DashboardScreen() {
     ]).start();
   }, [fadeAnim, translateAnim]);
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 1000);
+    await loadData();
+    setRefreshing(false);
   };
+
+  if (loading || !user) {
+    return (
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
+        <View style={[styles.scroll, { justifyContent: 'center', alignItems: 'center' }]}>
+          <Text style={{ color: colors.textSecondary }}>Loading dashboard...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const unread = announcements.filter(item => item.unread).length;
+  const completedClasses = todayClasses.filter(cls => cls.done).length;
+  const lowAttendance = attendance
+    .map(item => ({
+      ...item,
+      percent: getAttendancePercent(item.attended, item.total),
+    }))
+    .sort((a, b) => a.percent - b.percent);
+  const lowestAttendance = lowAttendance[0];
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -145,9 +194,9 @@ export default function DashboardScreen() {
         <View style={styles.header}>
           <View style={styles.headerCopy}>
             <Text style={styles.headerEyebrow}>{getTodayLabel()}</Text>
-            <Text style={styles.headerTitle}>{getGreeting()}, {mockUser.name.split(' ')[0]}</Text>
+            <Text style={styles.headerTitle}>{getGreeting()}, {user.name.split(' ')[0]}</Text>
             <Text style={styles.headerSubtitle}>
-              {mockUser.semester} • {mockUser.section} Section
+              {user.semester} • {user.section} Section
             </Text>
           </View>
 
@@ -156,13 +205,13 @@ export default function DashboardScreen() {
               <Text style={styles.unreadPillText}>{unread} new</Text>
             </View>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{mockUser.avatar}</Text>
+              <Text style={styles.avatarText}>{user.avatar}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.statsGrid}>
-          {mockStats.map(stat => (
+          {stats.map(stat => (
             <View key={stat.label} style={styles.statCard}>
               <View style={styles.statTopRow}>
                 <View style={[styles.statIconWrap, { backgroundColor: `${stat.color}16` }]}>
@@ -296,7 +345,7 @@ export default function DashboardScreen() {
             <Text style={styles.sectionMeta}>{unread} unread</Text>
           </View>
 
-          {mockAnnouncements.slice(0, 3).map(item => (
+          {announcements.slice(0, 3).map(item => (
             <TouchableOpacity key={item.id} style={styles.announcementCard} activeOpacity={0.85}>
               <View style={styles.announcementTopRow}>
                 <View

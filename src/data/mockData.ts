@@ -1,22 +1,22 @@
 // Updated: 2026-04-05
 export const mockUser = {
-  name: 'Ananya Ravikumar',
-  usn: '1RV21CS045',
+  name: 'Esheshwari Kumari',
+  usn: '1RV24CS101',
   branch: 'Computer Science & Engineering',
   semester: '6th Semester',
   year: '3rd Year',
-  section: 'C',
-  phone: '+91 98765 43210',
-  email: 'ananya.rv21cs045@rvce.edu.in',
-  avatar: 'AR',
-  dob: '12 March 2003',
-  hostel: 'Day Scholar',
+  section: 'B',
+  phone: '+91 98765 43211',
+  email: 'esheshwarikumarbca24@rvu.edu.in',
+  avatar: 'EK',
+  dob: '20 July 2004',
+  hostel: 'Girls Hostel A',
 };
 
 export const mockStats = [
-  { label: 'Attendance', value: '84%', color: '#10B981' },
-  { label: 'CGPA', value: '8.7', color: '#1A3C6E' },
-  { label: 'Credits', value: '142', color: '#F4A020' },
+  { label: 'Attendance', value: '92%', color: '#10B981' },
+  { label: 'CGPA', value: '9.4', color: '#1A3C6E' },
+  { label: 'Credits', value: '148', color: '#F4A020' },
   { label: 'Backlogs', value: '0', color: '#10B981' },
 ];
 

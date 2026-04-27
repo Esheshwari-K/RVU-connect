@@ -1,0 +1,40 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Settings file 'D:\RVU-connect\android\settings.gradle' line: 3
+
+* What went wrong:
+Error resolving plugin [id: 'com.facebook.react.settings']
+> A problem occurred configuring project ':gradle-plugin'.
+   > Multiple build operations failed.
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\e97744fac32a226e5ce3578f3189a26a\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\009314c57ba15b41c81fe4bd74b390ca\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\d2d68c17bc6c370ad3ecc31c3a69c70c\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\89cf85b84335eeb0cc146175e1ec2966\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\b28b83c8693e59e762b02c75b02a059e\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\eeafb450b7bd800d6e7e397aa1af2504\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\0cb5a5e5e77f6b4ac508682966a70ece\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\b4900c55a79eb2a53ccbed380db385f1\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\4beb8af439d342e920781dabb870783f\metadata.bin
+         Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\4038cf1d8151bae523d354c1929923c3\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\e97744fac32a226e5ce3578f3189a26a\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\009314c57ba15b41c81fe4bd74b390ca\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\d2d68c17bc6c370ad3ecc31c3a69c70c\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\89cf85b84335eeb0cc146175e1ec2966\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\b28b83c8693e59e762b02c75b02a059e\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\eeafb450b7bd800d6e7e397aa1af2504\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\0cb5a5e5e77f6b4ac508682966a70ece\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\b4900c55a79eb2a53ccbed380db385f1\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\4beb8af439d342e920781dabb870783f\metadata.bin
+      > Could not read workspace metadata from C:\Users\HP\.gradle\caches\9.0.0\transforms\4038cf1d8151bae523d354c1929923c3\metadata.bin
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to generate a Build Scan (Powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 32s

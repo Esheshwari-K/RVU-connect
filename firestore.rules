@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Users can read and write their own attendance records
+    match /users/{userId}/attendance/{subjectId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // All authenticated users can read timetables, events, announcements, clubs
+    match /timetables/{day} {
+      allow read: if request.auth != null;
+    }
+
+    match /events/{eventId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null; // Allow updates for registration status
+    }
+
+    match /announcements/{announcementId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null; // Allow marking as read
+    }
+
+    match /clubs/{clubId} {
+      allow read: if request.auth != null;
+    }
+  }
+}

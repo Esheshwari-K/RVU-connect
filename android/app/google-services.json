@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "941127878834",
+    "project_id": "rvu--connect",
+    "storage_bucket": "rvu--connect.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:941127878834:android:55f91915cac404a809a1ab",
+        "android_client_info": {
+          "package_name": "com.rvuconnect_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBu-W9czgKA9rEZyU-WSDaNlfuV7saCaD0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
