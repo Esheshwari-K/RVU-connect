@@ -28,6 +28,7 @@ A comprehensive mobile application for RV University students and staff, providi
 - React Native development environment
 - Android Studio (for Android development)
 - Xcode (for iOS development, macOS only)
+- Firebase Project Setup
 
 ### Installation
 
