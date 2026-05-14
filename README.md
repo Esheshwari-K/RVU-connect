@@ -11,6 +11,13 @@ A comprehensive mobile application for RV University students and staff, providi
 - **Events**: Stay updated with university events and activities
 - **Map**: Navigate the campus with interactive maps
 - **Profile**: Manage your personal information and settings
+- **Firebase Backend Integration:**
+
+-- Firebase Authentication
+-- Cloud Firestore Database
+-- Real-time Updates
+-- Firebase Storage
+-- Push Notifications using Firebase Cloud Messaging (FCM)
 
 ## Getting Started
 
@@ -61,17 +68,23 @@ A comprehensive mobile application for RV University students and staff, providi
 
 ```
 src/
-├── data/           # Mock data and constants
-├── navigation/     # Navigation components
-├── screens/        # Screen components
-└── theme/          # Theme and styling
+├── data/              # Mock data and constants
+├── navigation/        # Navigation components
+├── screens/           # Screen components
+├── services/          # Firebase services
+├── firebase/          # Firebase configuration
+└── theme/             # Theme and styling
 ```
 
 ## Technologies Used
 
 - React Native
 - TypeScript
+- Firebase
 - React Navigation
+- Firestore Database
+- Firebase Authentication
+- Firebase Cloud Messaging
 - Jest (for testing)
 
 ## Contributing
